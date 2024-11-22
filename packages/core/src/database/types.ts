@@ -1,3 +1,5 @@
+// packages/core/src/database/types.ts
+
 export interface Tenant {
     id: string;
     name: string;
@@ -7,6 +9,24 @@ export interface Tenant {
     updatedAt: Date;
     settings: TenantSettings;
   }
+
+
+export interface TenantContext {
+  id: string;
+  schemaName: string;
+  settings: TenantSettings;
+}
+
+// Add type guards
+export const isTenant = (value: unknown): value is Tenant => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'domain' in value &&
+    'isActive' in value
+  );
+};
   
   export interface TenantSettings {
     theme: ThemeConfig;
