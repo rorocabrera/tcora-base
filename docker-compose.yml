@@ -1,0 +1,55 @@
+services:
+  postgres:
+    build:
+      context: ./docker/development/postgres
+      dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=tcora_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d tcora_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  api:
+    build:
+      context: .
+      dockerfile: docker/development/Dockerfile
+      args:
+        SERVICE: api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - HOST=0.0.0.0
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev:api 
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  websocket:
+    build:
+      context: .
+      dockerfile: docker/development/Dockerfile
+    command: npm run dev:websocket
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
