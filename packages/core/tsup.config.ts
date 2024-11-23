@@ -6,6 +6,7 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   dts: true,
   clean: true,
-  external: ['react'],
+  external: ['@tcora/config', '@nestjs/common', '@nestjs/core', '@nestjs/jwt', 'bcrypt', 'ioredis'],
   sourcemap: true,
+  tsconfig: './tsconfig.json',
 });

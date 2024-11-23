@@ -19,9 +19,9 @@ jest.mock('@nestjs/config', () => ({
       const config: TestConfig = {
         DB_HOST: 'localhost',
         DB_PORT: 5432,
-        DB_USER: 'test',
-        DB_PASSWORD: 'test',
-        DB_NAME: 'test_db',
+        DB_USER: 'USER',
+        DB_PASSWORD: 'password',
+        DB_NAME: 'tCORA_db',
       };
       return config[key];
     }),

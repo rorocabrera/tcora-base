@@ -56,9 +56,9 @@ Frontend Applications:
 ```
 @tcora/
 ├── apps/
-│   ├── platform/          # Platform administration
-│   ├── admin/            # Tenant administration
-│   └── client/           # End-user application
+│   ├── tcora-platform/          # Platform administration
+│   ├── tcora-admin/            # Tenant administration
+│   └── tcora-client/           # End-user application
 ├── packages/
 │   ├── config/           # Shared configuration
 │   ├── core/             # Core business logic

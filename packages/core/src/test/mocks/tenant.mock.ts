@@ -1,13 +1,13 @@
 // packages/core/src/test/mocks/tenant.mock.ts
 
 import { 
-    Tenant, 
     TenantSettings, 
     ThemeConfig, 
     FeatureFlags, 
     CustomizationConfig 
-  } from '../../database/types';
+  } from '@tcora/config';
   
+  import { Tenant } from '../../database/types';
   export const mockThemeConfig: ThemeConfig = {
     primaryColor: '#007AFF',
     secondaryColor: '#5856D6',

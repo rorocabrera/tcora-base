@@ -1,6 +1,6 @@
 // packages/core/src/auth/types.ts
 
-import { UserRole } from "../database/types";
+import { UserRole } from '@tcora/config';
 
 export interface AuthToken {
     token: string;

@@ -25,4 +25,4 @@ ARG SERVICE
 ENV SERVICE_NAME=$SERVICE
 
 # Start service using npm script
-CMD ["sh", "-c", "npm run dev:$SERVICE_NAME"]
+CMD ["sh", "-c", "if [ \"$NODE_ENV\" = \"test\" ]; then cd packages/core && npm run test; else npm run dev:$SERVICE_NAME; fi"]

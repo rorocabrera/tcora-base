@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres_test:
+    build:
+      context: ./docker/development/postgres
+      dockerfile: Dockerfile
+    ports:
+      - "5433:5432"  # Different port for test database
+    environment:
+      - POSTGRES_USER=test_user
+      - POSTGRES_PASSWORD=test_password
+      - POSTGRES_DB=tcora_test_db
+    volumes:
+      - ./docker/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U test_user -d tcora_test_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  test_runner:
+    build:
+      context: .
+      dockerfile: docker/development/Dockerfile
+    environment:
+      - NODE_ENV=test
+      - DB_HOST=postgres_test
+      - DB_PORT=5432
+      - DB_USER=test_user
+      - DB_PASSWORD=test_password
+      - DB_NAME=tcora_test_db
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres_test:
+        condition: service_healthy
+    command: sh -c "cd packages/core && npm run test"

@@ -1,11 +1,52 @@
-import { UserRole } from '../database/types';
+// packages/core/src/auth/guards.ts
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { JWTManager } from './jwt';
+import { UserRole } from '@tcora/config';
 
-export class AuthGuard {
-  static verifyRole(requiredRoles: UserRole[], userRole: UserRole): boolean {
-    return requiredRoles.includes(userRole);
+@Injectable()
+export class JwtAuthGuard implements CanActivate {
+  constructor(private jwtManager: JWTManager) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const token = this.extractTokenFromHeader(request);
+    
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const payload = await this.jwtManager.verifyToken(token);
+      request.user = payload;
+      return true;
+    } catch {
+      return false;
+    }
   }
 
-  static verifyTenantAccess(userTenantId: string, requestedTenantId: string): boolean {
-    return userTenantId === requestedTenantId;
+  private extractTokenFromHeader(request: any): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
+  }
+}
+
+@Injectable()
+export class RoleGuard implements CanActivate {
+  constructor(
+    private reflector: Reflector,
+    private jwtManager: JWTManager,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const requiredRoles = this.reflector.get<UserRole[]>('roles', context.getHandler());
+    if (!requiredRoles) {
+      return true;
+    }
+
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+
+    return requiredRoles.includes(user.role);
   }
 }

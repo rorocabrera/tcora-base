@@ -1,15 +1,25 @@
 // packages/core/src/database/types.ts
+import { BaseEntity, UserRole, TenantSettings } from '@tcora/config';
 
-export interface Tenant {
-    id: string;
-    name: string;
-    domain: string;
-    isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    settings: TenantSettings;
-  }
+export interface Tenant extends BaseEntity {
+  name: string;
+  domain: string;
+  isActive: boolean;
+  settings: TenantSettings;
+}
 
+export interface User extends BaseEntity {
+  tenantId: string;
+  email: string;
+  passwordHash: string;
+  firstName: string;
+  lastName: string;
+  role: UserRole;
+  isActive: boolean;
+  lastLogin?: Date;
+  permissions?: Record<string, any>;
+  resellerId?: string;
+}
 
 export interface TenantContext {
   id: string;
@@ -17,7 +27,7 @@ export interface TenantContext {
   settings: TenantSettings;
 }
 
-// Add type guards
+// Type guards
 export const isTenant = (value: unknown): value is Tenant => {
   return (
     typeof value === 'object' &&
@@ -27,46 +37,3 @@ export const isTenant = (value: unknown): value is Tenant => {
     'isActive' in value
   );
 };
-  
-  export interface TenantSettings {
-    theme: ThemeConfig;
-    features: FeatureFlags;
-    customization: CustomizationConfig;
-  }
-  
-  export interface ThemeConfig {
-    primaryColor: string;
-    secondaryColor: string;
-    logoUrl?: string;
-  }
-  
-  export interface FeatureFlags {
-    chat: boolean;
-    ticketing: boolean;
-    billing: boolean;
-  }
-  
-  export interface CustomizationConfig {
-    emailTemplates: Record<string, string>;
-    whiteLabelEnabled: boolean;
-  }
-  
-  export interface User {
-    id: string;
-    tenantId: string;
-    email: string;
-    passwordHash: string;
-    firstName: string;
-    lastName: string;
-    role: UserRole;
-    isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    lastLoginAt?: Date;
-  }
-  
-  export enum UserRole {
-    SUPER_ADMIN = 'SUPER_ADMIN',
-    ADMIN = 'ADMIN',
-    USER = 'USER',
-  }

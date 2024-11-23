@@ -1,5 +1,7 @@
-tree -a -I 'node_modules|.git|.DS_Store'
+tree -a -I 'node_modules|.git|.DS_Store|dist|' "/Users/roro/Documents/Coding Projects/TCora/services"
 
+
+tree -a -I 'node_modules|.git|.DS_Store' "/Users/roro/Documents/Coding Projects/TCora/packages"
  
 
 docker exec -it 2016f29392ad ls -la /app/services/api/dist
