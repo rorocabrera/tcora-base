@@ -1,7 +1,7 @@
 // apps/platform/src/routes/index.tsx
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
-import { LoginPage } from '@/pages/auth/login';
+import { PlatformLoginPage as LoginPage } from '@/pages/auth/login';
 import { DashboardPage } from '@/pages/dashboard';
 import { TenantsPage } from '@/pages/tenants';
 import { SettingsPage } from '@/pages/settings';
@@ -10,7 +10,7 @@ import { useAuth } from '@/providers/auth-provider';
 import { Layout } from '@/components/ui/index';
 
 export default function AppRoutes() {
-  const { isLoading } = useAuth();
+  const { isLoading, isAuthenticated } = useAuth();
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -18,7 +18,14 @@ export default function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+        <Route 
+        path="/login" 
+        element={
+          isAuthenticated ? 
+            <Navigate to="/dashboard" replace /> : 
+            <LoginPage />
+        } 
+      />
       
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>

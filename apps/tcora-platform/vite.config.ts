@@ -14,6 +14,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  define: {
+    // Inject env variables for the client
+    'process.env': {
+      VITE_API_URL: JSON.stringify(process.env.VITE_API_URL || 'http://localhost:3000'),
+      NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+    }
+  },
   server: {
     port: 3002,
     proxy: {

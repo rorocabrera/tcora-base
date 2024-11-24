@@ -2,7 +2,7 @@
 import { createContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authApi } from '@/lib/api';
-import { UserProfile, LoginCredentials } from '@/types';
+import { UserProfile, LoginCredentials } from '@tcora/config';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -72,10 +72,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [checkAuth]);
 
   const login = async (credentials: LoginCredentials) => {
-    const { accessToken, refreshToken, user } = await authApi.login(credentials);
+    const { tokens,user } = await authApi.platformLogin(credentials);
     
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('accessToken', tokens.accessToken);
+    localStorage.setItem('refreshToken', tokens.refreshToken);
     
     setState({
       isAuthenticated: true,

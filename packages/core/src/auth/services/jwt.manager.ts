@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JWT_CONFIG } from '@tcora/config';
 import { JWTPayload, TokenPair } from '@tcora/config';
-import { RedisService } from '../services/redis.service';
+import { RedisService } from '../../services/redis.service';
 
 @Injectable()
 export class JWTManager {
@@ -30,7 +30,7 @@ export class JWTManager {
       7 * 24 * 60 * 60 // 7 days in seconds
     );
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, expiresIn: parseInt(JWT_CONFIG.accessToken.expiresIn, 10)  };
   }
 
   async verifyToken(token: string, isRefresh = false): Promise<JWTPayload> {
