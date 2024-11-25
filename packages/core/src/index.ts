@@ -1,4 +1,5 @@
 // packages/core/src/index.ts
-export * from './auth/types';
-export * from './auth/guards';
+
+export * from './auth';
 export * from './database/types';
+export * from './services';

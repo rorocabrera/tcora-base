@@ -6,7 +6,8 @@ import {
     Body, 
     UseGuards, 
     Req, 
-    UnauthorizedException 
+    UnauthorizedException,
+    Inject
   } from '@nestjs/common';
   import { MultiAuthService } from '../services/multi-auth.service';
   import { JwtAuthGuard } from '../guards/jwt.guard';
@@ -31,16 +32,39 @@ import {
   
   @Controller('auth')
   export class MultiAuthController {
-    constructor(private authService: MultiAuthService) {}
+    constructor(
+      @Inject(MultiAuthService)
+      private readonly authService: MultiAuthService
+    ) {
+      // Add constructor logging
+      console.log('MultiAuthController initialized', {
+        hasAuthService: !!this.authService
+      });
+    }
   
     @Post('platform/login')
     async platformLogin(@Body() credentials: Omit<LoginDto, 'context'>) {
-      const user = await this.authService.validateUser(
-        credentials.email,
-        credentials.password,
-        { type: UserType.PLATFORM_ADMIN }
-      );
-      return this.authService.login(user, { type: UserType.PLATFORM_ADMIN });
+      console.log('Platform login attempt:', {
+        email: credentials.email,
+        hasPassword: !!credentials.password
+      });
+      
+      try {
+        const user = await this.authService.validateUser(
+          credentials.email,
+          credentials.password,
+          { type: UserType.PLATFORM_ADMIN }
+        );
+        console.log('User validated successfully:', {
+          userId: user.id,
+          email: user.email
+        });
+        
+        return this.authService.login(user, { type: UserType.PLATFORM_ADMIN });
+      } catch (error) {
+        console.error('Platform login failed:', error);
+        throw error;
+      }
     }
   
     @Post('tenant/login')

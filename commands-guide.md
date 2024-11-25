@@ -17,6 +17,7 @@ docker-compose down -v && docker-compose up
 
 
 # DEBUG SESSION 
-c
+docker-compose -f docker-compose.debug.yml down -v
+docker-compose -f docker-compose.debug.yml up -d
 npm run dev 
 

@@ -3,19 +3,28 @@
   "version": "0.0.1",
   "private": true,
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "require": "./dist/index.js"
+    },
+    "./auth/*": {
+      "require": "./dist/auth/*.js"
+    },
+    "./services/*": {
+      "require": "./dist/services/*.js"
+    }
+  },
   "files": [
     "dist/**"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "test": "jest --config jest.config.ts",
     "test:watch": "jest --config jest.config.ts --watch",
     "test:cov": "jest --config jest.config.ts --coverage",
     "test:debug": "node --inspect-brk -r ts-node/register node_modules/.bin/jest --runInBand --config jest.config.ts",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "lint": "eslint \"src/**/*.ts*\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },

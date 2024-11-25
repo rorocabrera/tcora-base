@@ -32,3 +32,6 @@ yarn-error.log*
 # IDE
 .idea
 .vscode
+*.d.ts
+*.d.ts.map
+*.js.map

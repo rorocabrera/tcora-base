@@ -3,9 +3,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JWTManager } from './jwt.manager';
 import { RedisService } from '../../services/redis.service';
-import { compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { Pool } from 'pg';
-import { ConfigService } from '@nestjs/config';
+import { DatabaseConfig } from '../../config/database.config';
 import {
   JWTPayload,
   TokenPair,
@@ -28,14 +28,14 @@ export class MultiAuthService {
   constructor(
     private jwtManager: JWTManager,
     private redisService: RedisService,
-    private configService: ConfigService
+    databaseConfig: DatabaseConfig
   ) {
     this.pool = new Pool({
-      host: this.configService.get('DB_HOST'),
-      port: this.configService.get('DB_PORT'),
-      user: this.configService.get('DB_USER'),
-      password: this.configService.get('DB_PASSWORD'),
-      database: this.configService.get('DB_NAME'),
+      host: databaseConfig.host,
+      port: databaseConfig.port,
+      user: databaseConfig.username,
+      password: databaseConfig.password,
+      database: databaseConfig.database,
     });
   }
 
@@ -93,6 +93,7 @@ export class MultiAuthService {
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
+
 
       const isPasswordValid = await compare(password, user.password_hash);
       if (!isPasswordValid) {

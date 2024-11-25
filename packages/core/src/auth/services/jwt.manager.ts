@@ -1,49 +1,40 @@
-// packages/core/src/auth/jwt.ts
+// packages/core/src/auth/jwt.manager.ts
+
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { JWT_CONFIG } from '@tcora/config';
-import { JWTPayload, TokenPair } from '@tcora/config';
 import { RedisService } from '../../services/redis.service';
+import { JWTPayload } from '@tcora/config';
+import { TokenPair } from '@tcora/config';
 
 @Injectable()
 export class JWTManager {
   constructor(
-    private jwtService: JwtService,
-    private redisService: RedisService,
+    private readonly jwtService: JwtService,
+    private readonly redisService: RedisService
   ) {}
 
+  
   async generateTokenPair(payload: Omit<JWTPayload, 'iat' | 'exp'>): Promise<TokenPair> {
-    const accessToken = await this.jwtService.signAsync(payload, {
-      secret: JWT_CONFIG.accessToken.secret,
-      expiresIn: JWT_CONFIG.accessToken.expiresIn,
-    });
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
-    const refreshToken = await this.jwtService.signAsync(payload, {
-      secret: JWT_CONFIG.refreshToken.secret,
-      expiresIn: JWT_CONFIG.refreshToken.expiresIn,
-    });
-
-    // Store refresh token in Redis with user ID as key
-    await this.redisService.set(
-      `refresh_token:${payload.sub}`,
-      refreshToken,
-      7 * 24 * 60 * 60 // 7 days in seconds
-    );
-
-    return { accessToken, refreshToken, expiresIn: parseInt(JWT_CONFIG.accessToken.expiresIn, 10)  };
+    return { accessToken, refreshToken, expiresIn: 7 * 24 * 60 * 60 };
   }
 
   async verifyToken(token: string, isRefresh = false): Promise<JWTPayload> {
-    const secret = isRefresh ? JWT_CONFIG.refreshToken.secret : JWT_CONFIG.accessToken.secret;
-    return this.jwtService.verifyAsync(token, { secret });
+    return this.jwtService.verify(token);
   }
 
   async blacklistToken(token: string): Promise<void> {
-    const decoded = await this.verifyToken(token);
-    await this.redisService.set(
-      `blacklist:${token}`,
-      'true',
-      60 * 15 // 15 minutes
-    );
+    const decoded = this.jwtService.decode(token) as JWTPayload;
+    if (!decoded) return;
+
+    const exp = decoded.exp || 0;
+    const now = Math.floor(Date.now() / 1000);
+    const ttl = exp - now;
+
+    if (ttl > 0) {
+      await this.redisService.set(`blacklist:${token}`, '1', ttl);
+    }
   }
 }

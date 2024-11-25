@@ -4,9 +4,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "nest start --watch",
-    "start:dev": "nest start --watch",
+    "start:dev": "nest start --debug --watch",
     "build": "nest build",
-    "test": "jest"
+    "test": "jest",
+    "seed": "ts-node src/scripts/seed.ts"
   },
   "keywords": [],
   "author": "",

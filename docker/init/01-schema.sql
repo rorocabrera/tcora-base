@@ -202,19 +202,6 @@ VALUES
  '{"max_users": -1, "features": ["unlimited_everything", "dedicated_support", "custom_development"]}',
  299.99, 2999.99);
 
--- Create initial platform admin
-INSERT INTO platform_admins (
-    email, 
-    password_hash,
-    first_name,
-    last_name
-) VALUES (
-    'admin@tcora.com',
-    -- This is a bcrypt hash for 'admin123' - CHANGE IN PRODUCTION!
-    '$2b$10$3GXzz.K8NJ8ylZ8.uj.Km.E3DhD9gmZ0gDBxP/c5sFAvK5tE4rEfq',
-    'System',
-    'Administrator'
-);
 
 -- Utility functions for managing tenant schemas
 

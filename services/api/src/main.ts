@@ -8,8 +8,18 @@ async function bootstrap() {
   logger.log('Starting API server...');
   
   try {
+
+    
+
     const app = await NestFactory.create(AppModule);
     logger.log('NestJS application created');
+
+    app.enableCors({
+      origin: ['http://localhost:3002'], // Your React app's URL
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      credentials: true, // Important for cookies/auth
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    });
 
     const port = process.env.PORT || 3000;
     const host = '0.0.0.0';

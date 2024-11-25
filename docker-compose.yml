@@ -17,6 +17,19 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
       context: .
@@ -25,16 +38,16 @@ services:
         SERVICE: api
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - HOST=0.0.0.0
+    env_file: 
+      - ./services/api/.env.docker
     volumes:
       - .:/app
       - /app/node_modules
     command: npm run dev:api 
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   websocket:
@@ -44,12 +57,17 @@ services:
     command: npm run dev:websocket
     ports:
       - "3001:3001"
+    env_file: 
+      - ./services/api/.env.docker
     volumes:
       - .:/app
       - /app/node_modules
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   postgres_data:
+  redis_data:
