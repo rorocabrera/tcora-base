@@ -167,7 +167,7 @@ export function AuthProvider({ children, userType = UserType.PLATFORM_ADMIN }) {
     try {
       const response = await authApi.platformLogin(credentials);
       // Handle the JWT token response
-      setAuthState(response);
+      setAuthState(response.accessToken);
       // Navigate to the previous route or dashboard
       const from = location.state?.from || '/dashboard';
       navigate(from, { replace: true });
